@@ -1,24 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import Button from '@material-ui/core/Button';
 
 function App() {
+
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([]);
+
+  const sendMessage = (event) => {
+    // all the login to send a message goes
+    event.preventDefault();
+    setMessages([...messages, input]);
+    setInput('');
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Let's start </h1>
+      <form>
+        <input value={input} onChange={ event => setInput(event.target.value) } />
+        <Button disable={!input} type='submit' variant="contained" color="primary" onClick={sendMessage}> Send Message </Button>
+      </form>
+
+      {messages.map(message => (
+        <p>{message}</p>
+      ))}
+      
     </div>
   );
 }
