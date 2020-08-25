@@ -7,7 +7,7 @@
 .message__user {
   padding: auto;
   margin: white;
-  text-align: left !important;
+  align-content: left !important;
 }
 
 .message__userCard{

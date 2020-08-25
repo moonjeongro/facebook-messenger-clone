@@ -1,13 +1,63 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
-import { Button, FormControl, InputLabel, Input } from '@material-ui/core';
-import Message from '../Message/Message';
-import db from '../../firebase';
+
+import { FormControl, Input } from '@material-ui/core';
+
+import { db } from '../../firebase';
 import firebase from 'firebase';
-import FlipMove from 'react-flip-move';
 
 import { IconButton } from '@material-ui/core';
 import SendIcon from '@material-ui/icons/Send';
+import MessageBox from '../MessageBox';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+`
+
+const Header = styled.div`
+  grid-row: 1;
+  
+  position: sticky;
+  top: 0px;
+  background-color: white;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .10);
+
+  z-index: 1;
+  width: 100%;
+  padding: 20px;
+`
+
+const Content = styled.div`
+  grid-row: 2;
+  padding: 20px;
+  position: relative;
+  overflow-y: auto;
+`
+
+const InputBox = styled.div`
+  grid-row: 3;
+  
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  width: 100%;
+  padding: 10px;
+  background-color: white;
+`
+
+const StyledFormControl = styled(FormControl)`
+  display: flex !important;
+  flex-direction: row !important;
+`
+
+const StyledInput = styled(Input)`
+  flex: 1;
+`
+
+const StyledIconButton = styled(IconButton)`
+  flex: 0;
+`
 
 function App() {
 
@@ -19,9 +69,11 @@ function App() {
     // run once when the app component loads
     // snapshot으로 데이터베이스가 업데이트 될 때마다 이 코드를 실행한다.
     db.collection('messages')
-      .orderBy('timeStamp', 'desc')
+      .orderBy('timeStamp')
       .onSnapshot(snapshot => {
-        setMessages(snapshot.docs.map(doc => ({ id: doc.id, message: doc.data()})))
+        setMessages(snapshot?.docs.map(doc => ({
+          id: doc.id, message: doc.data()
+        })))
       })
   }, [])
 
@@ -42,36 +94,34 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <img src="https://facebookbrand.com/wp-content/uploads/2018/09/Header-e1538151782912.png?w=100&h=100"></img>
-      <h1>Let's start </h1>
-      <h2>Welcome {userName}</h2>
-      <form className="app__form">
-        <FormControl className="app__formControl">
-          <Input className="app__input" placeholder='Enter a message...' value={input} onChange={event => setInput(event.target.value)} />
-          <IconButton
-            className="app__iconButton"
-            disabled={!input}
-            type="submit"
-            onClick={sendMessage}
-            color="primary"
-            variant="contained"
-            className="app__button"
-          >
-            <SendIcon />
-          </IconButton>
-        </FormControl>
-      </form>
+    <Container>
+      <Header>
+        avartar / name
+      </Header>
 
-      <FlipMove>
-        {
-          messages.map(({id, message}) => (
-            <Message key={id} userName={userName} message={message} />
-          ))
-        }
-      </FlipMove>
+      <Content>
+        <MessageBox messages={messages} userName={userName} />
+      </Content>
 
-    </div>
+      <InputBox>
+        <form>
+          <StyledFormControl >
+            <StyledInput className="app__input" placeholder='Enter a message...' value={input} onChange={event => setInput(event.target.value)} />
+            <StyledIconButton
+              className="app__iconButton"
+              disabled={!input}
+              type="submit"
+              onClick={sendMessage}
+              color="primary"
+              variant="contained"
+              className="app__button"
+            >
+              <SendIcon />
+            </StyledIconButton>
+          </StyledFormControl>
+        </form>
+      </InputBox>
+    </Container>
   );
 }
 
