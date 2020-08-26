@@ -18,7 +18,7 @@ const Message = forwardRef(({ userName, message }, ref) => {
 
   return (
     <MessageCard ref={ref} >
-      <StyledCard className={isUser ? 'message__userCard' : 'message__guestCard'}>
+      <StyledCard>
         <CardContent>
           <Typography
             color="white"
