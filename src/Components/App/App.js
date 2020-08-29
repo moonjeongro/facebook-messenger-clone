@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useReducer, useEffect } from 'react';
 
 import MessageBox from '../MessageBox';
 import styled from 'styled-components';
 import InputBar from '../InputBar';
+import Header from '../Header';
+import firebase from 'firebase';
+import { UserContext } from '../../UserManagementContext';
 
 const Container = styled.div`
   display: grid;
   grid-template-rows: auto 1fr auto;
 `
 
-const Header = styled.div`
+const StyledHeader = styled(Header)`
   grid-row: 1;
   
   position: sticky;
@@ -40,17 +43,44 @@ const StyledInputBar = styled(InputBar)`
   background-color: white;
 `
 
+const initialState = {};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'signin':
+      return action.payload;
+    case 'signout':
+      return action.payload;
+    default:
+      throw new Error();
+  }
+}
+
 function App() {
+  const [user, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    // app이 시작되면 익명 사용자로 로그인
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+        dispatch({ type: 'signin', payload: user })
+      } else {
+        firebase.auth().signInAnonymously().catch(function (error) {
+
+        });
+        dispatch({ type: 'signin', payload: firebase.auth().currentUser })
+      }
+    });
+  }, [])
 
   return (
-    <Container>
-      <Header>
-        avartar / name
-      </Header>
-      <StyledMessageBox />
-      <StyledInputBar />
-      
-    </Container>
+    <UserContext.Provider value={user}>
+      <Container>
+        <StyledHeader />
+        <StyledMessageBox />
+        <StyledInputBar />
+      </Container>
+    </UserContext.Provider>
   );
 }
 

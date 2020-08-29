@@ -1,13 +1,55 @@
-import { ApolloClient, InMemoryCache, makeVar } from '@apollo/client';
+
+import { ApolloClient, InMemoryCache, makeVar, split, HttpLink } from '@apollo/client';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { WebSocketLink } from '@apollo/client/link/ws';
+
+const httpLink = new HttpLink({
+  uri: 'http://localhost:4000/graphql'
+});
+
+const wsLink = new WebSocketLink({
+  uri: `ws://localhost:4000/graphql`,
+  options: {
+    reconnect: true
+  }
+});
+
+// The split function takes three parameters:
+//
+// * A function that's called for each operation to execute
+// * The Link to use for an operation if the function returns a "truthy" value
+// * The Link to use for an operation if the function returns a "falsy" value
+const link = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  httpLink,
+);
+
 
 const cache = new InMemoryCache({
-
+  typePolicies: { // Type policy map
+    Query: {
+      fields: { // Field policy map for the Product type
+        currentUser: { 
+          read() {
+            return currentUserVar();
+          }
+        },
+      }
+    }
+  }
 })
 
-export const isLikedVar = makeVar(false);
+export const currentUserVar = makeVar();
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/graphql',
+  link,
   cache 
 });
 
