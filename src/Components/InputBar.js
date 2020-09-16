@@ -8,7 +8,6 @@ import styled from 'styled-components';
 import { gql, useMutation } from '@apollo/client';
 import { UserContext } from '../UserManagementContext';
 
-
 const StyledFormControl = styled(FormControl)`
   display: flex !important;
   flex-direction: row !important;

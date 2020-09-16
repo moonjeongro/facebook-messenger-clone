@@ -1,28 +1,32 @@
 import React from 'react'
-import FirebaseAuth from './FirebaseAuth';
+
 import styled from 'styled-components';
-import { Button } from '@material-ui/core';
-import UserProfile from './UserProfile';
+
+import ModalFactory from './ModalFactory';
+import UserProfileButton from './UserProfile/UserProfileButton';
+import UserProfileContent from './UserProfile/UserProfileContent';
+import SignInButton from './SignInForms/SignIn/SignInButton';
+import SignInContent from './SignInForms/SignIn/SignInContent';
 
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
 `
 
 function Header() {
 
-  function onClick(e){  
-    
+  const signUpButtonProps = {
+    color: 'primary'
   }
+  const signUpButtonText = 'sign-up';
 
   return (
     <Container>
-      <UserProfile />
-      <Button color="primary" onClick={onClick}>sign-in</Button>
+      <ModalFactory button={UserProfileButton} content={UserProfileContent} />
+      <ModalFactory button={SignInButton} content={SignInContent} />
     </Container>
   )
 }
 
 export default Header;
-
-// <Avatar alt={} src={} />
